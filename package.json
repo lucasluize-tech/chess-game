@@ -1,0 +1,11 @@
+{
+  "name": "chess-game",
+  "version": "1.0.0",
+  "description": "simple chess game",
+  "main": "chess.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "author": "lucas",
+  "license": "ISC"
+}
