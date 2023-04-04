@@ -1,8 +1,9 @@
 // Let's try building a chess-game
 
 // 1. Create a class called Board
-// 2. Create a class called ChessGame
-// 3. Create a class called Player
+// 2. Create a class called Player
+// 3. Create a class called Piece
+// 4. Create a class called ChessGame
 
 function pieceName(column) {
   if (column === "a" || column === "h") {
@@ -31,19 +32,34 @@ class Board {
     this.rows.forEach((row) => {
       this.board.push([]);
       this.columns.forEach((column) => {
-        this.board[row].push(null);
+        let color = "white";
+        // push black pieces
+        if (!color === "white") {
+          this.board[row].push(
+            new Piece("black", pieceName(column), row, column)
+          );
+        }
+        // change color in the last rows
+        if (row === 6 || row === 7) {
+          color = "black";
+        }
+        // place pawns
+        if (row === 1 || row === 6) {
+          this.board[row].push(new Piece(color, "pawn", row, column));
+        }
+
+        this.board[row].push(new Piece(color, pieceName(column), row, column));
       });
     });
   }
 
+  // just see the board state
   render() {
     const board = this.board;
     board.forEach((row) => {
       console.log(row);
     });
   }
-
-  addPieces() {}
 }
 
 let board = new Board();
