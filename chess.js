@@ -1,108 +1,84 @@
-// Let's try building a chess-game
+const { Board, Player, Piece } = require("./models.js");
 
-// 1. Create a class called Board
-// 2. Create a class called Player
-// 3. Create a class called Piece
-// 4. Create a class called ChessGame
-
-function pieceName(column) {
-  if (column === "a" || column === "h") {
-    return "rook";
+function movePawn(piece) {
+  const { name, position, color } = piece;
+  if (name !== "pawn") return;
+  if (piece.position[0] === 1 || piece.position[0] === 6) {
+    if ((piece.color = "white")) {
+      return [row + 2, column];
+    } else {
+      return [row - 2, column];
+    }
   }
-  if (column === "b" || column === "g") {
-    return "knight";
-  }
-  if (column === "c" || column === "f") {
-    return "bishop";
-  }
-  if (column === "d") {
-    return "queen";
-  }
-  if (column === "e") {
-    return "king";
+  if ((piece.color = "white")) {
+    return [row + 1, column];
+  } else {
+    return [row - 1, column];
   }
 }
 
-class Board {
-  // create a 2D array of 8x8
-  constructor() {
-    this.board = [];
-    this.rows = [0, 1, 2, 3, 4, 5, 6, 7];
-    this.columns = ["a", "b", "c", "d", "e", "f", "g", "h"];
-    this.rows.forEach((row) => {
-      this.board.push([]);
-      this.columns.forEach((column) => {
-        let color = "white";
-        // push black pieces
-        if (!color === "white") {
-          this.board[row].push(
-            new Piece("black", pieceName(column), row, column)
-          );
-        }
-        // change color in the last rows
-        if (row === 6 || row === 7) {
-          color = "black";
-        }
-        // place pawns
-        if (row === 1 || row === 6) {
-          this.board[row].push(new Piece(color, "pawn", row, column));
-        }
+// takes a piece and return new possible positions
+function isValidMove(piece, newPosition) {
+  const pieceName = piece.name;
+  [row, column] = piece.position;
 
-        this.board[row].push(new Piece(color, pieceName(column), row, column));
-      });
-    });
-  }
-
-  // just see the board state
-  render() {
-    const board = this.board;
-    board.forEach((row) => {
-      console.log(row);
-    });
+  // all pawn moves can make
+  if (piece.name === "pawn") {
+    // if pawn is in the first row
+    if (row === 1 || row === 6) {
+      // if pawn is white we add 2 or 1. if black we subtract 2 or 1
+      if (piece.name === "white") {
+        return row === newPosition[0] + 2 || row === newPosition[0] + 1;
+      } else {
+        return row === newPosition[0] - 2 || row === newPosition[0] - 1;
+      }
+    }
+    return row === newPosition[0] + 1 || row === newPosition[0] - 1;
   }
 }
 
-let board = new Board();
-board.addPieces();
-board.render();
+function movePiece(board, piece, positionToMove) {
+  let pieceName = piece.name;
+  let piecePosition = piece.position;
+  let pieceColor = piece.color;
+  let [row, column] = positionToMove;
 
-class ChessGame {
-  constructor() {
-    this.board = new Board();
-    this.players = [new Player("white"), new Player("black")];
-    this.currentPlayer = this.players[0];
+  // check if move is allowed:
+
+  // iterate through board and check if position is null;
+  let openSpaces = [];
+  let occupiedSpaces = [];
+
+  for (let i = 0; i < 8; i++) {
+    for (let j = 0; j < 8; j++) {
+      if (board[i][j] === null) {
+        openSpaces.push([i, j]);
+      } else {
+        // mapping won't work because some pieces have the same name.
+        // so we need to push all places where there's a piece and then finding which piece is there.
+        occupiedSpaces.push([i, j]);
+      }
+    }
   }
-  play() {
-    // this.board.render();
-    // this.currentPlayer.render();
-  }
+  console.log("****** OPEN SPACES ******");
+  console.log(openSpaces);
+  console.log("****** PIECES ON BOARD ******");
+  console.log(occupiedSpaces);
+
+  //let's try to move
+
+  // first let's check with function isValidMove(piece)
+  // board[rowPiece][columnPiece] = [row, column];
 }
 
-class Player {
-  constructor(color) {
-    this.team = color;
-  }
-
-  move(Piece, place) {
-    // TODO: move the piece in the direction
-    Piece.setPosition(place);
-  }
+function ChessGame() {
+  const board = new Board();
+  const player1 = new Player("white");
+  const player2 = new Player("black");
+  // check inital board state
+  // console.log(board.board.forEach((v) => console.log(v)));
+  const boardState = board.board;
+  let piece = { color: "white", name: "rook", position: [1, 0] };
+  movePiece(boardState, piece, [2, 0]);
 }
-
-class Piece {
-  constructor(color, name, row, column) {
-    this.color = color;
-    this.name = name;
-    this.position = [row, column];
-  }
-
-  setPosition(position) {
-    this.position = position;
-  }
-
-  remove() {
-    this.position = null;
-  }
-}
-
-module.exports = { pieceName, Board, ChessGame, Player, Piece };
+ChessGame();
