@@ -6,7 +6,7 @@ console.log(chess);
 const board = document.querySelector("#board");
 board.classList.add("border");
 
-// state variables
+// inital state variables
 let [currentRow, currentCol] = [0, 0];
 let piece = chess.getPieceAt(currentRow, currentCol);
 let moves = [];
@@ -30,11 +30,21 @@ for (let i = 7; i >= 0; i--) {
     // for each square, create a td element clickable that can select 2 pieces to the move array
 
     const col = document.createElement("td");
-    col.setAttribute("id", `${i}${j}`);
     col.className = "col";
     col.classList.add("border");
 
-    col.addEventListener("click", (element) => {
+    const img = document.createElement("img");
+    piece = chess.getPieceAt(i, j);
+
+    if (piece) {
+      img.setAttribute("src", `./images/${piece?.name}-${piece?.color}.png`);
+    } else {
+      img.setAttribute("src", `./images/null.png`);
+    }
+
+    img.setAttribute("id", `${i}${j}`);
+
+    img.addEventListener("click", (element) => {
       currentRow = element.target.id[0];
       currentCol = element.target.id[1];
 
@@ -42,20 +52,24 @@ for (let i = 7; i >= 0; i--) {
         moves.push([parseInt(currentRow), parseInt(currentCol)]);
       }
 
-      piece = chess.getPieceAt(currentRow, currentCol);
-      console.log(
-        `row: ${currentRow}, col: ${currentCol} *** and ${piece?.name}`
-      );
+      try {
+        piece = chess.getPieceAt(currentRow, currentCol);
+        console.log(
+          `row: ${currentRow}, col: ${currentCol} *** and ${piece?.name}`
+        );
+      } catch (err) {
+        console.log(`row: ${currentRow}, col: ${currentCol} *** and null`);
+      }
+
+      if (piece === lastElement) return;
 
       if (selected) {
         const selectedPiece = moves[0];
-        const [rowToMove, colToMove] = moves[1];
 
         if (!piece) {
           if (
             validMoves.some(
-              (coords) =>
-                coords[0] === rowToMove[0] && coords[1] === colToMove[1]
+              (coords) => coords[0] === moves[1][0] && coords[1] === moves[1][1]
             )
           ) {
             console.log(
@@ -65,6 +79,7 @@ for (let i = 7; i >= 0; i--) {
             moves = [];
             // need to remove the toggle of the last element
             lastElement.classList.toggle("selected");
+            lastElement.setAttribute("id", `${currentRow}${currentCol}`);
             selected = !selected;
           }
         }
@@ -74,10 +89,11 @@ for (let i = 7; i >= 0; i--) {
       if (piece === null && !selected) return;
 
       // if we click on the same piece;
-      if (selected && move.length === 1) {
-        if (piece === move[0]) {
+      if (selected && moves.length === 1) {
+        debugger;
+        if (piece === moves[0]) {
           toggleSelected(element);
-          move = [];
+          moves = [];
         }
         return;
       }
@@ -91,15 +107,18 @@ for (let i = 7; i >= 0; i--) {
 
         console.log(`*** this are the valid moves for ${piece.name}`);
         console.log(validMoves);
-        move.push(piece);
+        moves.push(piece);
       }
     });
 
     if ((i + j) % 2 == 0) {
       col.classList.add("white");
     } else {
-      col.classList.add("black");
+      col.classList.add("gray");
     }
+
+    col.appendChild(img);
+
     row.appendChild(col);
   }
   board.appendChild(row);

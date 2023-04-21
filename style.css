@@ -4,8 +4,8 @@
   cursor: pointer;
 }
 
-.black {
-  background-color: black;
+.gray {
+  background-color: lightgray;
 }
 
 .white {
@@ -28,4 +28,15 @@ body {
 .selected {
   background-color: yellow;
   opacity: 0.5;
+}
+
+img {
+  position: relative;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  margin: auto;
+  max-width: 100%;
+  max-height: 100%;
 }
